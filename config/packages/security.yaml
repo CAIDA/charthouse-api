@@ -8,7 +8,7 @@ security:
             stateless: true
             guard:
                 authenticators:
-                  - App\Security\TokenAuthenticator
+                    - App\Security\TokenAuthenticator
 
     access_control:
         - { path: ^/%env(CH_API_VERSION)%/docs, roles: IS_AUTHENTICATED_ANONYMOUSLY }

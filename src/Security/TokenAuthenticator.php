@@ -5,6 +5,7 @@ namespace App\Security;
 
 use Auth0\JWTAuthBundle\Security\Auth0Service;
 use Auth0\JWTAuthBundle\Security\Core\JWTUserProviderInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -51,7 +52,6 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
         $data = [
             'error' => 'Authorization header required',
         ];
-
         return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
     }
 
@@ -130,7 +130,7 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
         }
 
         if (!$userProvider instanceof JWTUserProviderInterface) {
-            throw new \InvalidArgumentException('UserProvider implement interface Auth0\JWTAuthBundle\Security\Core\JWTUserProviderInterface');
+            throw new \InvalidArgumentException('UserProvider must implement interface Auth0\JWTAuthBundle\Security\Core\JWTUserProviderInterface');
         }
 
         if ($token->getCredentials() === null) {
