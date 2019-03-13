@@ -1,7 +1,7 @@
 security:
     providers:
         auth0_provider:
-            id: App\Security\UserProvider
+            id: App\Security\Auth0UserProvider
     firewalls:
         dev:
             pattern: ^/%env(CH_API_VERSION)%/(_(profiler|wdt)|css|images|js)/

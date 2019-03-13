@@ -7,7 +7,7 @@ use Auth0\JWTAuthBundle\Security\Core\JWTUserProviderInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class UserProvider implements JWTUserProviderInterface
+class Auth0UserProvider implements JWTUserProviderInterface
 {
     protected $auth0Service;
     protected $cache;
