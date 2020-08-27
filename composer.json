@@ -6,7 +6,7 @@
         "ext-curl": "^7.2",
         "ext-iconv": "*",
         "ext-json": "^1.6",
-        "auth0/jwt-auth-bundle": "^3.1",
+        "guzzlehttp/guzzle": "^7.0",
         "nelmio/api-doc-bundle": "^3.3",
         "nelmio/cors-bundle": "^1.5",
         "sensio/framework-extra-bundle": "^5.2",
@@ -23,7 +23,9 @@
     },
     "require-dev": {
         "symfony/maker-bundle": "*",
-        "symfony/profiler-pack": "*"
+        "symfony/profiler-pack": "*",
+        "symfony/var-dumper": "4.2.*",
+        "symfony/web-server-bundle": "4.2.*"
     },
     "config": {
         "preferred-install": {

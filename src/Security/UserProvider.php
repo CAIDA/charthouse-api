@@ -35,62 +35,23 @@
 
 namespace App\Security;
 
-use Auth0\JWTAuthBundle\Security\Auth0Service;
-use Auth0\JWTAuthBundle\Security\Core\JWTUserProviderInterface;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 
-class UserProvider implements JWTUserProviderInterface
+class UserProvider implements UserProviderInterface
 {
-    protected $auth0Service;
-    protected $cache;
-
-    public function __construct(Auth0Service $auth0Service)
-    {
-        $this->auth0Service = $auth0Service;
-        // TODO: replace this with a better cache
-        $this->cache = new FilesystemAdapter();
-    }
-
-    public function loadUserByJWT($jwt)
-    {
-        // check the cache first
-        // TODO: replace this with local user profile, authorization info etc.
-        $cachedProfile = $this->cache->getItem('A0Profile|'.$jwt->sub.md5($jwt->token));
-        if (!$cachedProfile->isHit()) {
-            $profile = $this->auth0Service->getUserProfileByA0UID($jwt->token, $jwt->sub);
-            $cachedProfile->expiresAfter(300);
-            $cachedProfile->set($profile);
-            $this->cache->save($cachedProfile);
-        } else {
-            $profile = $cachedProfile->get();
-        }
-
-        // NOTE: What we (Auth0) call 'permissions', symfony calls 'roles'
-        // also, Symfony requires roles start with ROLE_ (sigh)
-        $roles = [];
-        if (array_key_exists('https://hicube.caida.org/auth', $profile) &&
-            array_key_exists('permissions', $profile['https://hicube.caida.org/auth'])) {
-            $perms = $profile['https://hicube.caida.org/auth']['permissions'];
-            foreach ($perms as $perm) {
-                $roles[] = "ROLE_$perm";
-            }
-        }
-        return new User($jwt, $roles);
-    }
-
-    public function getAnonymousUser()
-    {
-        return new AnonymousUser();
-    }
-
     /**
      * Symfony calls this method if you use features like switch_user
      * or remember_me.
      *
-     * @var $username
+     * If you're not using these features, you do not need to implement
+     * this method.
      *
-     * @throws \Exception
+     * @return UserInterface
+     *
+     * @throws UsernameNotFoundException if the user is not found
      */
     public function loadUserByUsername($username)
     {
@@ -98,7 +59,7 @@ class UserProvider implements JWTUserProviderInterface
         // The $username argument may not actually be a username:
         // it is whatever value is being returned by the getUsername()
         // method in your User class.
-        throw new \Exception('Unsupported method');
+        throw new \Exception('TODO: fill in loadUserByUsername() inside '.__FILE__);
     }
 
     /**
@@ -109,23 +70,24 @@ class UserProvider implements JWTUserProviderInterface
      * called. Your job is to make sure the user's data is still fresh by,
      * for example, re-querying for fresh User data.
      *
-     * If your firewall is "stateless: false" (for a pure API), this
+     * If your firewall is "stateless: true" (for a pure API), this
      * method is not called.
      *
-     * @var $user
-     *
-     * @throws \Exception
+     * @return UserInterface
      */
     public function refreshUser(UserInterface $user)
     {
-        throw new \Exception('Unsupported method');
+        if (!$user instanceof User) {
+            throw new UnsupportedUserException(sprintf('Invalid user class "%s".', get_class($user)));
+        }
+
+        // Return a User object after making sure its data is "fresh".
+        // Or throw a UsernameNotFoundException if the user no longer exists.
+        throw new \Exception('TODO: fill in refreshUser() inside '.__FILE__);
     }
 
     /**
      * Tells Symfony to use this provider for this User class.
-     *
-     * @var $class
-     * @return bool
      */
     public function supportsClass($class)
     {
