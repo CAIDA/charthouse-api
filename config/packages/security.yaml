@@ -1,17 +1,25 @@
 security:
     providers:
-        auth0_provider:
+        # used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
             id: App\Security\UserProvider
     firewalls:
         dev:
             pattern: ^/%env(CH_API_VERSION)%/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
+            anonymous: true
+            logout: ~
+
+            guard:
+                authenticators:
+                    - App\Security\KeycloakApiKeyAuthenticator
+                    - App\Security\KeycloakBearerAuthenticator
+                entry_point: App\Security\KeycloakBearerAuthenticator
             pattern: ^/
             stateless: true
-            simple_preauth:
-                authenticator: jwt_auth.jwt_authenticator
 
     access_control:
         - { path: ^/%env(CH_API_VERSION)%/docs, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/, roles: 'ROLE_api:query' }
+

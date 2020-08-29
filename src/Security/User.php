@@ -35,39 +35,34 @@
 
 namespace App\Security;
 
-use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\EquatableInterface;
 
 class User implements UserInterface, EquatableInterface
 {
-    private $jwt;
+    private $username;
+    private $kcToken;
 
     private $roles = [];
 
-    public function __construct($jwt, $roles)
+    public function __construct($kctoken, $apikeyroles)
     {
-        $this->jwt = $jwt;
-        $this->roles = $roles;
+        $this->kcToken = $kctoken;
+        if ($apikeyroles) {
+            $this->roles = json_decode($apikeyroles);
+            if (!is_array($this->roles)) {
+                $this->roles = [];
+            }
+        }
     }
 
-    public function getSubject(): ?string
-    {
-        return $this->jwt ? $this->jwt->sub : null;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->jwt ? $this->jwt->email : null;
-    }
-
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUsername(): ?string
     {
-        return $this->getSubject();
+        if ($this->kcToken != null)
+        {
+            return "keycloakuser";
+        }
+        return "anonymous";
     }
 
     /**
@@ -75,7 +70,10 @@ class User implements UserInterface, EquatableInterface
      */
     public function getRoles(): array
     {
-        return $this->roles;
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+        return array_unique($roles);
     }
 
     public function setRoles(array $roles): self
