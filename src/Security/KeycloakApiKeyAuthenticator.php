@@ -57,7 +57,7 @@ class KeycloakApiKeyAuthenticator extends AbstractGuardAuthenticator
     public function __construct()
     {
         $this->client = new Client();
-        $this->kcserver = $_SERVER["KEYCLOAK_URL"];
+        $this->kcserver = rtrim($_SERVER["KEYCLOAK_URL"], "/");
         $this->kcrealm = $_SERVER["KEYCLOAK_REALM"];
         $this->kcclient = $_SERVER["KEYCLOAK_CLIENT"];
     }
@@ -95,7 +95,7 @@ class KeycloakApiKeyAuthenticator extends AbstractGuardAuthenticator
 
 
         $response = $this->client->request('GET',
-                $this->kcserver . "auth/realms/" . $this->kcrealm . "/check",
+                $this->kcserver . "/auth/realms/" . $this->kcrealm . "/check",
                 $params);
         return new User(null, $response->getBody()->getContents());
     }
